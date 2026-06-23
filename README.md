@@ -8,4 +8,4 @@
 ## Normal Flow
 ![Me](./assets/normal_flow.png)
 ## AI Suggestion Flow
-![Me](./assets/ai_suggestion_flow.png)
+![Me](./assets/Ai_Suggestion_flow.png)
