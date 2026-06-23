@@ -38,8 +38,6 @@ const seedDatabase = async () => {
 
         const statuses = ["open", "pending", "closed", "open", "open", "pending", "closed", "open", "pending", "open"];
 
-        await messageRepo.delete({});
-        console.log("🧹 Cleared old conversations and messages.");
 
         for (let i = 0; i < 10; i++) {
             const conversation = conversationRepo.create({
@@ -63,7 +61,7 @@ const seedDatabase = async () => {
 
             const msg2 = messageRepo.create({
                 conversationId: savedConvo.conversationId,
-                sender: "agent",
+                sender: "admin",
                 text: `Hello ${mockCustomers[i]}, I would be happy to help! What seems to be the issue?`,
             });
 

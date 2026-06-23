@@ -19,7 +19,7 @@ export const initReplyWorker = () => {
             await client.set(cacheKey, suggestion, { EX: 60 * 60 * 24 });
             console.log(`[Worker] Suggestion cached in Redis for ticket ${conversationId}`);
 
-            return { success: true };
+            return { success: true, conversationId, suggestion };
         },
         {
             connection: redisConnection,

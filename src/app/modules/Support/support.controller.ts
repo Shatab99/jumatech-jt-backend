@@ -39,7 +39,7 @@ const getAllConversations = catchAsync(async (req, res) => {
     const conversations = await dynamicQueryBuilder({
         repository: conRepo,
         query: req.query,
-        searchableFields: ["status","customerName"],
+        searchableFields: ["status", "customerName"],
     })
 
     await client.set(cacheKey, JSON.stringify(conversations), { EX: 60 * 60 * 24 });
@@ -119,19 +119,34 @@ const streamAiSuggestionUpdates = catchAsync(async (req, res) => {
     const conversationId = Number(id);
 
     res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
-
+    res.setHeader("Cache-Control", "no-cache, no-transform");
+    res.setHeader("X-Accel-Buffering", "no");
+    res.flushHeaders();
     res.write(`data: ${JSON.stringify({ event: "connected", conversationId })}\n\n`);
 
-    const onJobCompleted = async ({ jobId, returnvalue }: any) => {
-        if (returnvalue && returnvalue.conversationId === conversationId) {
-            const payload = JSON.stringify({
-                event: "ai_suggestion_ready",
-                suggestion: returnvalue.suggestion
-            });
+    if (typeof (res as any).flush === 'function') {
+        (res as any).flush();
+    }
 
-            res.write(`data: ${payload}\n\n`);
+    const onJobCompleted = async ({ jobId, returnvalue }: any) => {
+        try {
+            const parsedResult = typeof returnvalue === "string"
+                ? JSON.parse(returnvalue)
+                : returnvalue;
+
+            if (parsedResult && parsedResult.conversationId === conversationId) {
+                const payload = JSON.stringify({
+                    event: "ai_suggestion_ready",
+                    suggestion: parsedResult.suggestion
+                });
+                res.write(`data: ${payload}\n\n`);
+                if (typeof (res as any).flush === 'function') {
+                    (res as any).flush();
+                }
+            }
+        } catch (error) {
+            console.error("SSE Parsing Error:", error);
         }
     };
 
@@ -142,7 +157,6 @@ const streamAiSuggestionUpdates = catchAsync(async (req, res) => {
         res.end();
     });
 });
-
 
 export const supportController = {
     getAllConversations,
