@@ -43,9 +43,7 @@ app.use("/uploads", express.static(uploadPath));
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'http://104.236.95.208:3003',
-    "https://shokhermela.com",
-    "https://www.shokhermela.com",
+    'https://jumatechs.shatab.me'
   ]
 }));
 app.use("/api/token", AuthController.accessToken)

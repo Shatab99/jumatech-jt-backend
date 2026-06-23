@@ -4,7 +4,7 @@ import { jwtHelpers } from "../helper/jwtHelpers";
 
 export const checkClient = (req: Request, res: Response, next: NextFunction) => {
     try {
-        if (process.env.ENV === 'dev') return next();
+        // if (process.env.ENV === 'dev') return next();
         const internalKey = req.headers['x-internal-key'];
         const { access } = jwtHelpers.verifyToken(internalKey as string);
 
