@@ -39,7 +39,7 @@ const getAllConversations = catchAsync(async (req, res) => {
     const conversations = await dynamicQueryBuilder({
         repository: conRepo,
         query: req.query,
-        searchableFields: ["subject", "status", "userId"],
+        searchableFields: ["status","customerName"],
     })
 
     await client.set(cacheKey, JSON.stringify(conversations), { EX: 60 * 60 * 24 });
@@ -84,7 +84,7 @@ const suggestReply = catchAsync(async (req, res) => {
 
     const job = await replyQueue.add("ai-reply-suggestions", {
         conversationId: Number(id),
-        text: messages.map(msg => msg.text).join("\n")
+        text: messages.map(msg => msg.text).reverse().join("\n")
     });
 
 
@@ -114,11 +114,41 @@ const sendReply = catchAsync(async (req, res) => {
     sendResponse(res, 200, "Reply sent successfully", { reply: `Reply sent for conversation ${id}: ${text}` });
 })
 
+const streamAiSuggestionUpdates = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const conversationId = Number(id);
+
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+
+    res.write(`data: ${JSON.stringify({ event: "connected", conversationId })}\n\n`);
+
+    const onJobCompleted = async ({ jobId, returnvalue }: any) => {
+        if (returnvalue && returnvalue.conversationId === conversationId) {
+            const payload = JSON.stringify({
+                event: "ai_suggestion_ready",
+                suggestion: returnvalue.suggestion
+            });
+
+            res.write(`data: ${payload}\n\n`);
+        }
+    };
+
+    replyQueueEvent.on("completed", onJobCompleted);
+
+    req.on("close", () => {
+        replyQueueEvent.off("completed", onJobCompleted);
+        res.end();
+    });
+});
+
 
 export const supportController = {
     getAllConversations,
     getConversationById,
     suggestReply,
     sendReply,
-    sendCustomerMessage
+    sendCustomerMessage,
+    streamAiSuggestionUpdates
 }

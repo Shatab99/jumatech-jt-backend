@@ -10,7 +10,6 @@ import fs from "fs";
 import morgan from "morgan";
 import { swaggerSpec, swaggerUiOptions } from "./config/swaggerConfig";
 import compression from 'compression';
-import { connectDB } from "./app/DB/dbConnection";
 import { AuthController } from "./app/modules/Auth/auth.controller";
 import { checkClient } from "./app/middleware/checkClient";
 
