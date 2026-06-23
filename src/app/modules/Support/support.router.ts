@@ -6,7 +6,9 @@ import { supportValidation } from "./support.valiations";
 
 const r = Router();
 
-r.get("/get-conversations", auth("admin"), supportController.getAllConversations);
+r.post("/:id/send-customer-message", validateRequest(supportValidation.userMessage), supportController.sendCustomerMessage);
+
+r.get("/get-conversations", auth("admin"),supportController.getAllConversations);
 
 r.get("/get-conversation/:id", auth("admin"), supportController.getConversationById);
 

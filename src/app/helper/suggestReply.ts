@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const suggestReply = async (text: string) => {
+export const suggestReplyFromAI = async (text: string) => {
     const apiKey = process.env.OPENROUTER_API_KEY;
     const model = process.env.OPENROUTER_MODEL;
 
