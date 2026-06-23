@@ -43,7 +43,7 @@ app.use("/uploads", express.static(uploadPath));
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://jumatechs.shatab.me'
+    'https://jumatechjt.shatab.me'
   ]
 }));
 app.use("/api/token", AuthController.accessToken)
