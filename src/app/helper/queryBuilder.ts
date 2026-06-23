@@ -4,6 +4,16 @@ import {
   Repository, // Ensure Repository is imported
 } from "typeorm";
 
+type QueryBuilderOptions<T> = {
+  repository: any;
+  query: any; // You should define a proper type for this based on your query structure
+  searchableFields?: string[];
+  forcedFilters?: FindOptionsWhere<T>;
+  relations?: any; // Define a proper type for relations if possible
+  includeSelects?: string[];
+  excludeSelects?: string[];
+}
+
 export const dynamicQueryBuilder = async <T>({
   repository,
   query,
@@ -12,7 +22,7 @@ export const dynamicQueryBuilder = async <T>({
   relations = {},
   includeSelects = [],
   excludeSelects = []
-}: any) => { // You really should use strict types here instead of 'any', but keeping 'any' for now to match your input
+}: QueryBuilderOptions<T>) => {
   const {
     page = 1,
     limit,
@@ -66,14 +76,14 @@ export const dynamicQueryBuilder = async <T>({
   // 2. Handle Exclude (Blacklist) - Only runs if we haven't already built a select object
   if (excludeSelects && excludeSelects.length > 0 && !selectObject) {
     selectObject = {};
-    
+
     // ✅ FIX: Use TypeORM Metadata to get the real column names
     const metadata = repository.metadata;
-    
+
     // metadata.columns contains all the columns defined in your Entity
     metadata.columns.forEach((column: any) => {
       const propertyName = column.propertyName;
-      
+
       // If this column is NOT in the exclude list, add it to the select
       if (!excludeSelects.includes(propertyName)) {
         selectObject[propertyName] = true;

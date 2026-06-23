@@ -4,7 +4,7 @@ import { Conversation } from "./Conversation";
 @Entity()
 export class Message {
   @PrimaryGeneratedColumn()
-  id: number;
+  msgId: number;
 
   @Column()
   conversationId: number;

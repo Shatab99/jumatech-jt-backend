@@ -65,11 +65,13 @@ export class User {
 
   @Column({
     type: "timestamp",
+    nullable: true,
   })
   loggedAt: Date;
 
   @Column({
     type: "timestamp",
+    nullable: true,
   })
   passwordChangedAt: Date;
 }

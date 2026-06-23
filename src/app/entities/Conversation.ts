@@ -3,21 +3,21 @@ import { Message } from "./Message";
 
 @Entity()
 export class Conversation {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    conversationId: number;
 
-  @Column()
-  customerName: string;
+    @Column()
+    customerName: string;
 
-  @Column({ default: "open" }) // open, closed, pending
-  status: string;
+    @Column({ default: "open" }) // open, closed, pending
+    status: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
+    @CreateDateColumn()
+    createdAt: Date;
 
-  @UpdateDateColumn()
-  updatedAt: Date;
+    @UpdateDateColumn()
+    updatedAt: Date;
 
-  @OneToMany(() => Message, (message) => message.conversation)
-  messages: Message[];
+    @OneToMany(() => Message, (message) => message.conversation)
+    messages: Message[];
 }
